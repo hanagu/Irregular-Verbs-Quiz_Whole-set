@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irregular Verbs Quiz</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Pretendard', sans-serif;
+            background-color: #f0f9ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+            border: 4px solid #4a90e2;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .score-item {
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .score-correct { background-color: #e6fffa; color: #00b894; }
+        .score-wrong { background-color: #ffe6e6; color: #ff7675; }
+
+        .quiz-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .verb-box {
+            width: 160px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: #636e72;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+
+        .static-box {
+            background-color: #dfe6e9;
+            color: #2d3436;
+        }
+
+        .input-box {
+            background-color: #fff;
+            border: 3px solid #0984e3;
+            box-shadow: 0 0 10px rgba(9, 132, 227, 0.2);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: transparent;
+            outline: none;
+            color: #0984e3;
+        }
+
+        .btn {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
+        }
+
+        .btn:hover {
+            background-color: #076cb8;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            height: 40px;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .correct-msg { color: #00b894; }
+        .wrong-msg { color: #d63031; }
+
+        .hidden { display: none; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .quiz-area { flex-direction: column; }
+            .verb-box { width: 100%; height: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🦁 Irregular Verbs Quiz</h1>
+    
+    <div class="score-board">
+        <div class="score-item score-correct">Correct: <span id="correct-count">0</span></div>
+        <div class="score-item score-wrong">Wrong: <span id="wrong-count">0</span></div>
+    </div>
+
+    <div class="quiz-area" id="quiz-container">
+        </div>
+
+    <div id="message-area" class="message"></div>
+    <button class="btn" id="action-btn" onclick="checkAnswer()">Check Answer</button>
+</div>
+
+<script>
+    // 선생님이 주신 128개 불규칙 동사 리스트 데이터
+    // Modal verbs (can, may, shall) are excluded from the quiz logic to prevent confusion.
+    const verbs = [
+        { base: "awake", past: "awoke (awaked)", pp: "awoken (awaked)" },
+        { base: "be", past: "was, were", pp: "been" },
+        { base: "bear", past: "bore", pp: "born, borne" },
+        { base: "beat", past: "beat", pp: "beat, beaten" },
+        { base: "become", past: "became", pp: "become" },
+        { base: "begin", past: "began", pp: "begun" },
+        { base: "bend", past: "bent", pp: "bent" },
+        { base: "bet", past: "bet (betted)", pp: "bet (betted)" },
+        { base: "bite", past: "bit", pp: "bit" },
+        { base: "bleed", past: "bled", pp: "bled" },
+        { base: "bless", past: "blest (blessed)", pp: "blest (blessed)" },
+        { base: "blow", past: "blew", pp: "blown" },
+        { base: "break", past: "broke", pp: "broken" },
+        { base: "breed", past: "bred", pp: "bred" },
+        { base: "bring", past: "brought", pp: "brought" },
+        { base: "broadcast", past: "broadcast (broadcasted)", pp: "broadcast (broadcasted)" },
+        { base: "build", past: "built", pp: "built" },
+        { base: "burn", past: "burnt (burned)", pp: "burnt (burned)" },
+        { base: "burst", past: "burst", pp: "burst" },
+        { base: "buy", past: "bought", pp: "bought" },
+        // { base: "can", past: "could", pp: "" }, // Excluded
+        { base: "cast", past: "cast", pp: "cast" },
+        { base: "catch", past: "caught", pp: "caught" },
+        { base: "choose", past: "chose", pp: "chosen" },
+        { base: "come", past: "came", pp: "come" },
+        { base: "cost", past: "cost", pp: "cost" },
+        { base: "creep", past: "crept", pp: "crept" },
+        { base: "cut", past: "cut", pp: "cut" },
+        { base: "deal", past: "dealt", pp: "dealt" },
+        { base: "dig", past: "dug", pp: "dug" },
+        { base: "do", past: "did", pp: "done" },
+        { base: "draw", past: "drew", pp: "drawn" },
+        { base: "dream", past: "dreamt (dreamed)", pp: "dreamt (dreamed)" },
+        { base: "drink", past: "drank", pp: "drunk" },
+        { base: "drive", past: "drove", pp: "driven" },
+        { base: "eat", past: "ate", pp: "eaten" },
+        { base: "fall", past: "fell", pp: "fallen" },
+        { base: "feed", past: "fed", pp: "fed" },
+        { base: "feel", past: "felt", pp: "felt" },
+        { base: "fight", past: "fought", pp: "fought" },
+        { base: "find", past: "found", pp: "found" },
+        { base: "flee", past: "fled", pp: "fled" },
+        { base: "fly", past: "flew", pp: "flown" },
+        { base: "forbid", past: "forbade", pp: "forbidden (forbid)" },
+        { base: "forecast", past: "forecast (forecasted)", pp: "forecast (forecasted)" },
+        { base: "forget", past: "forgot", pp: "forgotten" },
+        { base: "freeze", past: "froze", pp: "frozen" },
+        { base: "get", past: "got", pp: "gotten" },
+        { base: "give", past: "gave", pp: "given" },
+        { base: "go", past: "went", pp: "gone" },
+        { base: "grow", past: "grew", pp: "grown" },
+        { base: "hang", past: "hung", pp: "hung" },
+        { base: "have", past: "had", pp: "had" },
+        { base: "hear", past: "heard", pp: "heard" },
+        { base: "hide", past: "hid", pp: "hidden (hid)" },
+        { base: "hit", past: "hit", pp: "hit" },
+        { base: "hold", past: "held", pp: "held" },
+        { base: "hurt", past: "hurt", pp: "hurt" },
+        { base: "keep", past: "kept", pp: "kept" },
+        { base: "know", past: "knew", pp: "known" },
+        { base: "lay", past: "laid", pp: "laid" },
+        { base: "lead", past: "led", pp: "led" },
+        { base: "lean", past: "leant (leaned)", pp: "leant (leaned)" },
+        { base: "leap", past: "leapt (leaped)", pp: "leapt (leaped)" },
+        { base: "learn", past: "learnt (learned)", pp: "learnt (learned)" },
+        { base: "leave", past: "left", pp: "left" },
+        { base: "lend", past: "lent", pp: "lent" },
+        { base: "let", past: "let", pp: "let" },
+        { base: "lie", past: "lay", pp: "lain" },
+        { base: "light", past: "lit (lighted)", pp: "lit (lighted)" },
+        { base: "lose", past: "lost", pp: "lost" },
+        { base: "make", past: "made", pp: "made" },
+        // { base: "may", past: "might", pp: "" }, // Excluded
+        { base: "mean", past: "meant", pp: "meant" },
+        { base: "meet", past: "met", pp: "met" },
+        { base: "pay", past: "paid", pp: "paid" },
+        { base: "put", past: "put", pp: "put" },
+        { base: "quit", past: "quit (quitted)", pp: "quit (quitted)" },
+        { base: "read", past: "read", pp: "read" },
+        { base: "rid", past: "rid (ridded)", pp: "rid (ridded)" },
+        { base: "ride", past: "rode", pp: "ridden" },
+        { base: "ring", past: "rang", pp: "rung" },
+        { base: "rise", past: "rose", pp: "risen" },
+        { base: "run", past: "ran", pp: "run" },
+        { base: "say", past: "said", pp: "said" },
+        { base: "see", past: "saw", pp: "seen" },
+        { base: "seek", past: "sought", pp: "sought" },
+        { base: "sell", past: "sold", pp: "sold" },
+        { base: "send", past: "sent", pp: "sent" },
+        { base: "set", past: "set", pp: "set" },
+        { base: "shake", past: "shook", pp: "shaken" },
+        // { base: "shall", past: "should", pp: "" }, // Excluded
+        { base: "shoot", past: "shot", pp: "shot" },
+        { base: "show", past: "showed", pp: "shown (showed)" },
+        { base: "shrink", past: "shrank", pp: "shrunk" },
+        { base: "shut", past: "shut", pp: "shut" },
+        { base: "sing", past: "sang", pp: "sung" },
+        { base: "sink", past: "sank", pp: "sunk" },
+        { base: "sit", past: "sat", pp: "sat" },
+        { base: "sleep", past: "slept", pp: "slept" },
+        { base: "slide", past: "slid", pp: "slid" },
+        { base: "smell", past: "smelt (smelled)", pp: "smelt (smelled)" },
+        { base: "speak", past: "spoke", pp: "spoken" },
+        { base: "spell", past: "spelt (spelled)", pp: "spelt (spelled)" },
+        { base: "spend", past: "spent", pp: "spent" },
+        { base: "spill", past: "spilt (spilled)", pp: "spilt (spilled)" },
+        { base: "spin", past: "spun", pp: "spun" },
+        { base: "split", past: "split", pp: "split" },
+        { base: "spoil", past: "spoilt (spoiled)", pp: "spoilt (spoiled)" },
+        { base: "spread", past: "spread", pp: "spread" },
+        { base: "stand", past: "stood", pp: "stood" },
+        { base: "steal", past: "stole", pp: "stolen" },
+        { base: "stick", past: "stuck", pp: "stuck" },
+        { base: "sting", past: "stung", pp: "stung" },
+        { base: "swear", past: "swore", pp: "sworn" },
+        { base: "sweat", past: "sweat (sweated)", pp: "sweat (sweated)" },
+        { base: "swim", past: "swam", pp: "swum" },
+        { base: "swing", past: "swung", pp: "swung" },
+        { base: "take", past: "took", pp: "taken" },
+        { base: "teach", past: "taught", pp: "taught" },
+        { base: "tear", past: "tore", pp: "torn" },
+        { base: "tell", past: "told", pp: "told" },
+        { base: "think", past: "thought", pp: "thought" },
+        { base: "throw", past: "threw", pp: "thrown" },
+        { base: "wake", past: "woke (waked)", pp: "woken (waked)" },
+        { base: "wear", past: "wore", pp: "worn" },
+        { base: "win", past: "won", pp: "won" },
+        { base: "write", past: "wrote", pp: "written" }
+    ];
+
+    let currentQuestion = {};
+    let hiddenIndex = 0; // 0=base, 1=past, 2=pp
+    let score = { correct: 0, wrong: 0 };
+    let state = 'answering'; // 'answering' or 'feedback'
+
+    const quizContainer = document.getElementById('quiz-container');
+    const msgArea = document.getElementById('message-area');
+    const actionBtn = document.getElementById('action-btn');
+    const correctEl = document.getElementById('correct-count');
+    const wrongEl = document.getElementById('wrong-count');
+
+    function generateQuestion() {
+        state = 'answering';
+        msgArea.innerHTML = '';
+        msgArea.className = 'message';
+        actionBtn.innerText = 'Check Answer';
+        actionBtn.style.backgroundColor = '#0984e3';
+
+        // 1. 랜덤 단어 선택
+        const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+        
+        // 2. 랜덤으로 숨길 칸 선택 (0, 1, 2)
+        hiddenIndex = Math.floor(Math.random() * 3);
+        
+        currentQuestion = randomVerb;
+
+        // 3. HTML 생성
+        const forms = [randomVerb.base, randomVerb.past, randomVerb.pp];
+        const labels = ["Base Form (원형)", "Simple Past (과거)", "Past Participle (과거분사)"];
+
+        let html = '';
+        forms.forEach((text, index) => {
+            if (index === hiddenIndex) {
+                // 입력칸
+                html += `
+                    <div class="verb-box input-box">
+                        <span class="label">${labels[index]}</span>
+                        <input type="text" id="user-input" autocomplete="off" placeholder="?" onkeyup="handleEnter(event)">
+                    </div>
+                `;
+            } else {
+                // 고정된 칸 (표시용 텍스트 정리: 괄호가 길면 줄바꿈 고려 등은 CSS가 처리)
+                // 만약 너무 길면 첫번째 것만 보여줄 수도 있으나, 학습을 위해 다 보여줌
+                html += `
+                    <div class="verb-box static-box">
+                        <span class="label">${labels[index]}</span>
+                        <div>${text}</div>
+                    </div>
+                `;
+            }
+        });
+
+        quizContainer.innerHTML = html;
+        
+        // 입력창에 자동 포커스
+        setTimeout(() => document.getElementById('user-input').focus(), 100);
+    }
+
+    function checkAnswer() {
+        if (state === 'feedback') {
+            generateQuestion();
+            return;
+        }
+
+        const inputEl = document.getElementById('user-input');
+        const userText = inputEl.value.trim().toLowerCase();
+        
+        // 정답 데이터 가져오기 (예: "awoke (awaked)")
+        let correctTextRaw = '';
+        if (hiddenIndex === 0) correctTextRaw = currentQuestion.base;
+        else if (hiddenIndex === 1) correctTextRaw = currentQuestion.past;
+        else correctTextRaw = currentQuestion.pp;
+
+        // 정답 검증 로직 (스마트 체크)
+        // 1. 콤마나 괄호, 슬래시 등으로 구분된 여러 답안을 모두 허용
+        // "awoke (awaked)" -> ["awoke", "awaked"]
+        // "was, were" -> ["was", "were"]
+        const possibleAnswers = correctTextRaw
+            .toLowerCase()
+            .replace(/[()]/g, ',') // 괄호를 콤마로 변환
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+
+        const isCorrect = possibleAnswers.includes(userText);
+
+        if (isCorrect) {
+            // 정답 처리
+            score.correct++;
+            correctEl.innerText = score.correct;
+            msgArea.innerText = "Excellent! Correct!";
+            msgArea.className = "message correct-msg";
+            
+            // 입력창을 정답 색상으로 변경
+            inputEl.parentElement.style.backgroundColor = "#e6fffa";
+            inputEl.parentElement.style.borderColor = "#00b894";
+            inputEl.style.color = "#00b894";
+            
+            // 버튼 변경
+            actionBtn.innerText = "Next Question ➡️";
+            actionBtn.style.backgroundColor = "#00b894";
+            state = 'feedback';
+        } else {
+            // 오답 처리
+            score.wrong++;
+            wrongEl.innerText = score.wrong;
+            msgArea.innerHTML = `Oops! The answer is <b>"${correctTextRaw}"</b>`;
+            msgArea.className = "message wrong-msg";
+            
+            // 입력창을 오답 색상으로 변경
+            inputEl.parentElement.style.backgroundColor = "#ffe6e6";
+            inputEl.parentElement.style.borderColor = "#d63031";
+            
+            // 버튼 변경
+            actionBtn.innerText = "Next Question ➡️";
+            actionBtn.style.backgroundColor = "#d63031";
+            state = 'feedback';
+        }
+    }
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    }
+
+    // 게임 시작
+    generateQuestion();
+
+</script>
+
+</body>
+</html>
