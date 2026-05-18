@@ -1,427 +1,542 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Irregular Verbs Quiz</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* 깔끔한 시스템 산세리프(고딕) 폰트 적용 */
         body {
-            font-family: 'Comic Sans MS', 'Pretendard', sans-serif;
-            background-color: #f0f9ff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
         }
 
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 800px;
-            width: 90%;
-            border: 4px solid #4a90e2;
+        /* 3D Modal Animations */
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-
-        .score-board {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .score-item {
-            padding: 10px 20px;
-            border-radius: 10px;
-        }
-
-        .score-correct { background-color: #e6fffa; color: #00b894; }
-        .score-wrong { background-color: #ffe6e6; color: #ff7675; }
-
-        .quiz-area {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .verb-box {
-            width: 160px;
-            height: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 15px;
-            font-size: 1.4rem;
-            font-weight: bold;
-            position: relative;
-        }
-
-        .label {
-            font-size: 0.8rem;
-            color: #636e72;
-            margin-bottom: 5px;
-            font-weight: normal;
-        }
-
-        .static-box {
-            background-color: #dfe6e9;
-            color: #2d3436;
-        }
-
-        .input-box {
-            background-color: #fff;
-            border: 3px solid #0984e3;
-            box-shadow: 0 0 10px rgba(9, 132, 227, 0.2);
-        }
-
-        input[type="text"] {
-            width: 100%;
-            height: 100%;
-            border: none;
-            text-align: center;
-            font-size: 1.4rem;
-            font-weight: bold;
-            background: transparent;
-            outline: none;
-            color: #0984e3;
-        }
-
-        .btn {
-            background-color: #0984e3;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
-        }
-
-        .btn:hover {
-            background-color: #076cb8;
-            transform: translateY(-2px);
-        }
-
-        .message {
-            height: 40px;
-            margin-top: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .correct-msg { color: #00b894; }
-        .wrong-msg { color: #d63031; }
-
-        .hidden { display: none; }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .quiz-area { flex-direction: column; }
-            .verb-box { width: 100%; height: 80px; }
+        .animate-bounceIn {
+            animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center py-10 px-4">
 
-<div class="container">
-    <h1>🦁 Irregular Verbs Quiz</h1>
-    
-    <div class="score-board">
-        <div class="score-item score-correct">Correct: <span id="correct-count">0</span></div>
-        <div class="score-item score-wrong">Wrong: <span id="wrong-count">0</span></div>
+    <!-- Smart Copyright & Contact Badge (Hover to expand) -->
+    <div class="fixed top-4 right-4 z-[9999] group flex flex-col items-end font-sans">
+      <!-- Collapsed Badge -->
+      <div class="bg-orange-500 text-white font-bold text-sm sm:text-base px-4 py-2 rounded-full shadow-md cursor-help opacity-90 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+        © Ms. Hana
+      </div>
+      
+      <!-- Expanded Info Box -->
+      <div class="mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 text-sm text-slate-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 origin-top-right">
+        <h3 class="font-black text-slate-800 text-base mb-2 border-b border-slate-100 pb-2">© Hana (Hyuna) Gu</h3>
+        <ul class="space-y-2 mb-4 text-xs sm:text-sm">
+          <li class="flex items-start gap-2">
+            <span class="text-green-500 font-bold">✓</span>
+            <span>Free for <b>student self-study</b> and practice.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-red-500 font-bold">✗</span>
+            <span><b>Classroom use by other educators</b> requires explicit permission.</span>
+          </li>
+        </ul>
+        <div class="pt-3 border-t border-slate-100 text-xs sm:text-sm bg-slate-50 p-3 rounded-lg">
+          <p class="font-bold text-slate-700 mb-1">Need more levels or topics?</p>
+          <p>Contact for full access & licensing:<br>
+            <a href="mailto:hanagu.teaching@gmail.com" class="text-blue-600 font-bold hover:underline break-all">hanagu.teaching@gmail.com</a>
+          </p>
+        </div>
+      </div>
     </div>
 
-    <div class="quiz-area" id="quiz-container">
+    <!-- Header Stats -->
+    <div class="w-full max-w-3xl flex justify-between items-center text-slate-500 font-bold mb-2 text-sm sm:text-base">
+        <div>Score: <span id="correct-count" class="text-green-600">0</span> - <span id="wrong-count" class="text-red-500">0</span></div>
+        <div id="progress-text">1 / 126</div>
+    </div>
+    
+    <div class="w-full max-w-3xl h-2.5 bg-slate-200 rounded-full mb-8 overflow-hidden">
+        <div class="h-full bg-blue-500 w-0 transition-all duration-300" id="progress-fill"></div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="w-full max-w-3xl bg-white p-8 sm:p-12 rounded-3xl shadow-xl border-4 border-blue-400 text-center relative transition-all duration-300">
+        
+        <!-- 5-Mistake Tracker -->
+        <div class="text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Mistakes to review (5 triggers loop)</div>
+        <div class="flex justify-center gap-2 mb-6" id="mistake-tracker">
+            <div id="dot-1" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div id="dot-2" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div id="dot-3" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div id="dot-4" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all duration-300"></div>
+            <div id="dot-5" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all duration-300"></div>
         </div>
 
-    <div id="message-area" class="message"></div>
-    <button class="btn" id="action-btn" onclick="checkAnswer()">Check Answer</button>
-</div>
+        <div id="review-banner" class="hidden bg-orange-500 text-white font-bold px-6 py-2 rounded-full mx-auto w-max mb-6 uppercase tracking-widest shadow-md">
+            ★ Review Mode ★
+        </div>
 
-<script>
-    // 선생님이 주신 128개 불규칙 동사 리스트 데이터
-    // Modal verbs (can, may, shall) are excluded from the quiz logic to prevent confusion.
-    const verbs = [
-        { base: "awake", past: "awoke (awaked)", pp: "awoken (awaked)" },
-        { base: "be", past: "was, were", pp: "been" },
-        { base: "bear", past: "bore", pp: "born, borne" },
-        { base: "beat", past: "beat", pp: "beat, beaten" },
-        { base: "become", past: "became", pp: "become" },
-        { base: "begin", past: "began", pp: "begun" },
-        { base: "bend", past: "bent", pp: "bent" },
-        { base: "bet", past: "bet (betted)", pp: "bet (betted)" },
-        { base: "bite", past: "bit", pp: "bit" },
-        { base: "bleed", past: "bled", pp: "bled" },
-        { base: "bless", past: "blest (blessed)", pp: "blest (blessed)" },
-        { base: "blow", past: "blew", pp: "blown" },
-        { base: "break", past: "broke", pp: "broken" },
-        { base: "breed", past: "bred", pp: "bred" },
-        { base: "bring", past: "brought", pp: "brought" },
-        { base: "broadcast", past: "broadcast (broadcasted)", pp: "broadcast (broadcasted)" },
-        { base: "build", past: "built", pp: "built" },
-        { base: "burn", past: "burnt (burned)", pp: "burnt (burned)" },
-        { base: "burst", past: "burst", pp: "burst" },
-        { base: "buy", past: "bought", pp: "bought" },
-        // { base: "can", past: "could", pp: "" }, // Excluded
-        { base: "cast", past: "cast", pp: "cast" },
-        { base: "catch", past: "caught", pp: "caught" },
-        { base: "choose", past: "chose", pp: "chosen" },
-        { base: "come", past: "came", pp: "come" },
-        { base: "cost", past: "cost", pp: "cost" },
-        { base: "creep", past: "crept", pp: "crept" },
-        { base: "cut", past: "cut", pp: "cut" },
-        { base: "deal", past: "dealt", pp: "dealt" },
-        { base: "dig", past: "dug", pp: "dug" },
-        { base: "do", past: "did", pp: "done" },
-        { base: "draw", past: "drew", pp: "drawn" },
-        { base: "dream", past: "dreamt (dreamed)", pp: "dreamt (dreamed)" },
-        { base: "drink", past: "drank", pp: "drunk" },
-        { base: "drive", past: "drove", pp: "driven" },
-        { base: "eat", past: "ate", pp: "eaten" },
-        { base: "fall", past: "fell", pp: "fallen" },
-        { base: "feed", past: "fed", pp: "fed" },
-        { base: "feel", past: "felt", pp: "felt" },
-        { base: "fight", past: "fought", pp: "fought" },
-        { base: "find", past: "found", pp: "found" },
-        { base: "flee", past: "fled", pp: "fled" },
-        { base: "fly", past: "flew", pp: "flown" },
-        { base: "forbid", past: "forbade", pp: "forbidden (forbid)" },
-        { base: "forecast", past: "forecast (forecasted)", pp: "forecast (forecasted)" },
-        { base: "forget", past: "forgot", pp: "forgotten" },
-        { base: "freeze", past: "froze", pp: "frozen" },
-        { base: "get", past: "got", pp: "gotten" },
-        { base: "give", past: "gave", pp: "given" },
-        { base: "go", past: "went", pp: "gone" },
-        { base: "grow", past: "grew", pp: "grown" },
-        { base: "hang", past: "hung", pp: "hung" },
-        { base: "have", past: "had", pp: "had" },
-        { base: "hear", past: "heard", pp: "heard" },
-        { base: "hide", past: "hid", pp: "hidden (hid)" },
-        { base: "hit", past: "hit", pp: "hit" },
-        { base: "hold", past: "held", pp: "held" },
-        { base: "hurt", past: "hurt", pp: "hurt" },
-        { base: "keep", past: "kept", pp: "kept" },
-        { base: "know", past: "knew", pp: "known" },
-        { base: "lay", past: "laid", pp: "laid" },
-        { base: "lead", past: "led", pp: "led" },
-        { base: "lean", past: "leant (leaned)", pp: "leant (leaned)" },
-        { base: "leap", past: "leapt (leaped)", pp: "leapt (leaped)" },
-        { base: "learn", past: "learnt (learned)", pp: "learnt (learned)" },
-        { base: "leave", past: "left", pp: "left" },
-        { base: "lend", past: "lent", pp: "lent" },
-        { base: "let", past: "let", pp: "let" },
-        { base: "lie", past: "lay", pp: "lain" },
-        { base: "light", past: "lit (lighted)", pp: "lit (lighted)" },
-        { base: "lose", past: "lost", pp: "lost" },
-        { base: "make", past: "made", pp: "made" },
-        // { base: "may", past: "might", pp: "" }, // Excluded
-        { base: "mean", past: "meant", pp: "meant" },
-        { base: "meet", past: "met", pp: "met" },
-        { base: "pay", past: "paid", pp: "paid" },
-        { base: "put", past: "put", pp: "put" },
-        { base: "quit", past: "quit (quitted)", pp: "quit (quitted)" },
-        { base: "read", past: "read", pp: "read" },
-        { base: "rid", past: "rid (ridded)", pp: "rid (ridded)" },
-        { base: "ride", past: "rode", pp: "ridden" },
-        { base: "ring", past: "rang", pp: "rung" },
-        { base: "rise", past: "rose", pp: "risen" },
-        { base: "run", past: "ran", pp: "run" },
-        { base: "say", past: "said", pp: "said" },
-        { base: "see", past: "saw", pp: "seen" },
-        { base: "seek", past: "sought", pp: "sought" },
-        { base: "sell", past: "sold", pp: "sold" },
-        { base: "send", past: "sent", pp: "sent" },
-        { base: "set", past: "set", pp: "set" },
-        { base: "shake", past: "shook", pp: "shaken" },
-        // { base: "shall", past: "should", pp: "" }, // Excluded
-        { base: "shoot", past: "shot", pp: "shot" },
-        { base: "show", past: "showed", pp: "shown (showed)" },
-        { base: "shrink", past: "shrank", pp: "shrunk" },
-        { base: "shut", past: "shut", pp: "shut" },
-        { base: "sing", past: "sang", pp: "sung" },
-        { base: "sink", past: "sank", pp: "sunk" },
-        { base: "sit", past: "sat", pp: "sat" },
-        { base: "sleep", past: "slept", pp: "slept" },
-        { base: "slide", past: "slid", pp: "slid" },
-        { base: "smell", past: "smelt (smelled)", pp: "smelt (smelled)" },
-        { base: "speak", past: "spoke", pp: "spoken" },
-        { base: "spell", past: "spelt (spelled)", pp: "spelt (spelled)" },
-        { base: "spend", past: "spent", pp: "spent" },
-        { base: "spill", past: "spilt (spilled)", pp: "spilt (spilled)" },
-        { base: "spin", past: "spun", pp: "spun" },
-        { base: "split", past: "split", pp: "split" },
-        { base: "spoil", past: "spoilt (spoiled)", pp: "spoilt (spoiled)" },
-        { base: "spread", past: "spread", pp: "spread" },
-        { base: "stand", past: "stood", pp: "stood" },
-        { base: "steal", past: "stole", pp: "stolen" },
-        { base: "stick", past: "stuck", pp: "stuck" },
-        { base: "sting", past: "stung", pp: "stung" },
-        { base: "swear", past: "swore", pp: "sworn" },
-        { base: "sweat", past: "sweat (sweated)", pp: "sweat (sweated)" },
-        { base: "swim", past: "swam", pp: "swum" },
-        { base: "swing", past: "swung", pp: "swung" },
-        { base: "take", past: "took", pp: "taken" },
-        { base: "teach", past: "taught", pp: "taught" },
-        { base: "tear", past: "tore", pp: "torn" },
-        { base: "tell", past: "told", pp: "told" },
-        { base: "think", past: "thought", pp: "thought" },
-        { base: "throw", past: "threw", pp: "thrown" },
-        { base: "wake", past: "woke (waked)", pp: "woken (waked)" },
-        { base: "wear", past: "wore", pp: "worn" },
-        { base: "win", past: "won", pp: "won" },
-        { base: "write", past: "wrote", pp: "written" }
-    ];
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-800 mb-6">Irregular Verbs Quiz</h1>
 
-    let currentQuestion = {};
-    let hiddenIndex = 0; // 0=base, 1=past, 2=pp
-    let score = { correct: 0, wrong: 0 };
-    let state = 'answering'; // 'answering' or 'feedback'
+        <!-- Audio Button (Smart TTS) -->
+        <button onclick="playAudio()" class="mx-auto mb-8 p-4 bg-sky-50 text-sky-600 rounded-full hover:bg-sky-100 hover:text-sky-700 transition shadow-sm border border-slate-200" title="Listen to visible words">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+        </button>
 
-    const quizContainer = document.getElementById('quiz-container');
-    const msgArea = document.getElementById('message-area');
-    const actionBtn = document.getElementById('action-btn');
-    const correctEl = document.getElementById('correct-count');
-    const wrongEl = document.getElementById('wrong-count');
+        <!-- Quiz Area -->
+        <div id="quiz-area" class="flex flex-wrap justify-center items-center gap-4 mb-8">
+            <!-- JS dynamically inserts verb boxes here -->
+        </div>
 
-    function generateQuestion() {
-        state = 'answering';
-        msgArea.innerHTML = '';
-        msgArea.className = 'message';
-        actionBtn.innerText = 'Check Answer';
-        actionBtn.style.backgroundColor = '#0984e3';
+        <!-- Feedback Message Area -->
+        <div id="message-area" class="h-10 text-xl font-bold mb-6 flex items-center justify-center tracking-wide"></div>
 
-        // 1. 랜덤 단어 선택
-        const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
-        
-        // 2. 랜덤으로 숨길 칸 선택 (0, 1, 2)
-        hiddenIndex = Math.floor(Math.random() * 3);
-        
-        currentQuestion = randomVerb;
+        <!-- Action Button -->
+        <button id="action-btn" onclick="checkAnswer()" class="px-10 py-4 bg-blue-600 text-white font-bold text-xl rounded-full shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-1 w-full sm:w-auto">
+            Check Answer
+        </button>
+    </div>
 
-        // 3. HTML 생성
-        const forms = [randomVerb.base, randomVerb.past, randomVerb.pp];
-        const labels = ["Base Form (원형)", "Simple Past (과거)", "Past Participle (과거분사)"];
+    <!-- Alert Modal for Review Loop -->
+    <div id="review-modal" class="fixed inset-0 bg-slate-900/80 hidden justify-center items-center z-50">
+        <div class="bg-white p-10 rounded-3xl text-center max-w-md w-[90%] animate-bounceIn shadow-2xl">
+            <h2 id="modal-title" class="text-3xl font-extrabold text-orange-500 mb-4">Review Time!</h2>
+            <p id="modal-desc" class="text-lg text-slate-600 mb-8 font-medium">You missed 5 words. Let's practice them again before moving on!</p>
+            <button onclick="closeModalAndLoad()" class="px-8 py-4 bg-blue-600 text-white font-bold text-xl rounded-xl shadow-md hover:bg-blue-700 w-full transition">
+                Let's Go!
+            </button>
+        </div>
+    </div>
 
-        let html = '';
-        forms.forEach((text, index) => {
-            if (index === hiddenIndex) {
-                // 입력칸
-                html += `
-                    <div class="verb-box input-box">
-                        <span class="label">${labels[index]}</span>
-                        <input type="text" id="user-input" autocomplete="off" placeholder="?" onkeyup="handleEnter(event)">
-                    </div>
-                `;
-            } else {
-                // 고정된 칸 (표시용 텍스트 정리: 괄호가 길면 줄바꿈 고려 등은 CSS가 처리)
-                // 만약 너무 길면 첫번째 것만 보여줄 수도 있으나, 학습을 위해 다 보여줌
-                html += `
-                    <div class="verb-box static-box">
-                        <span class="label">${labels[index]}</span>
-                        <div>${text}</div>
-                    </div>
-                `;
+    <!-- Final Result Screen -->
+    <div id="result-screen" class="hidden w-full max-w-3xl bg-white p-12 rounded-3xl shadow-xl border-4 border-green-400 text-center flex-col items-center justify-center">
+        <div class="text-7xl mb-6">🎉</div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-blue-600 mb-4">Quiz Complete!</h1>
+        <p class="text-2xl text-slate-600 mb-10 font-bold">You have mastered all the irregular verbs.</p>
+        <button onclick="startQuiz()" class="px-10 py-5 bg-green-500 text-white font-extrabold text-2xl rounded-full shadow-lg hover:bg-green-600 transition transform hover:-translate-y-1 w-full sm:w-auto">
+            Play Again
+        </button>
+    </div>
+
+    <script>
+        // Data Library (Original 128 words, excluded modals)
+        const verbs = [
+            { base: "awake", past: "awoke (awaked)", pp: "awoken (awaked)" },
+            { base: "be", past: "was, were", pp: "been" },
+            { base: "bear", past: "bore", pp: "born, borne" },
+            { base: "beat", past: "beat", pp: "beat, beaten" },
+            { base: "become", past: "became", pp: "become" },
+            { base: "begin", past: "began", pp: "begun" },
+            { base: "bend", past: "bent", pp: "bent" },
+            { base: "bet", past: "bet (betted)", pp: "bet (betted)" },
+            { base: "bite", past: "bit", pp: "bit" },
+            { base: "bleed", past: "bled", pp: "bled" },
+            { base: "bless", past: "blest (blessed)", pp: "blest (blessed)" },
+            { base: "blow", past: "blew", pp: "blown" },
+            { base: "break", past: "broke", pp: "broken" },
+            { base: "breed", past: "bred", pp: "bred" },
+            { base: "bring", past: "brought", pp: "brought" },
+            { base: "broadcast", past: "broadcast (broadcasted)", pp: "broadcast (broadcasted)" },
+            { base: "build", past: "built", pp: "built" },
+            { base: "burn", past: "burnt (burned)", pp: "burnt (burned)" },
+            { base: "burst", past: "burst", pp: "burst" },
+            { base: "buy", past: "bought", pp: "bought" },
+            { base: "cast", past: "cast", pp: "cast" },
+            { base: "catch", past: "caught", pp: "caught" },
+            { base: "choose", past: "chose", pp: "chosen" },
+            { base: "come", past: "came", pp: "come" },
+            { base: "cost", past: "cost", pp: "cost" },
+            { base: "creep", past: "crept", pp: "crept" },
+            { base: "cut", past: "cut", pp: "cut" },
+            { base: "deal", past: "dealt", pp: "dealt" },
+            { base: "dig", past: "dug", pp: "dug" },
+            { base: "do", past: "did", pp: "done" },
+            { base: "draw", past: "drew", pp: "drawn" },
+            { base: "dream", past: "dreamt (dreamed)", pp: "dreamt (dreamed)" },
+            { base: "drink", past: "drank", pp: "drunk" },
+            { base: "drive", past: "drove", pp: "driven" },
+            { base: "eat", past: "ate", pp: "eaten" },
+            { base: "fall", past: "fell", pp: "fallen" },
+            { base: "feed", past: "fed", pp: "fed" },
+            { base: "feel", past: "felt", pp: "felt" },
+            { base: "fight", past: "fought", pp: "fought" },
+            { base: "find", past: "found", pp: "found" },
+            { base: "flee", past: "fled", pp: "fled" },
+            { base: "fly", past: "flew", pp: "flown" },
+            { base: "forbid", past: "forbade", pp: "forbidden (forbid)" },
+            { base: "forecast", past: "forecast (forecasted)", pp: "forecast (forecasted)" },
+            { base: "forget", past: "forgot", pp: "forgotten" },
+            { base: "freeze", past: "froze", pp: "frozen" },
+            { base: "get", past: "got", pp: "gotten" },
+            { base: "give", past: "gave", pp: "given" },
+            { base: "go", past: "went", pp: "gone" },
+            { base: "grow", past: "grew", pp: "grown" },
+            { base: "hang", past: "hung", pp: "hung" },
+            { base: "have", past: "had", pp: "had" },
+            { base: "hear", past: "heard", pp: "heard" },
+            { base: "hide", past: "hid", pp: "hidden (hid)" },
+            { base: "hit", past: "hit", pp: "hit" },
+            { base: "hold", past: "held", pp: "held" },
+            { base: "hurt", past: "hurt", pp: "hurt" },
+            { base: "keep", past: "kept", pp: "kept" },
+            { base: "know", past: "knew", pp: "known" },
+            { base: "lay", past: "laid", pp: "laid" },
+            { base: "lead", past: "led", pp: "led" },
+            { base: "lean", past: "leant (leaned)", pp: "leant (leaned)" },
+            { base: "leap", past: "leapt (leaped)", pp: "leapt (leaped)" },
+            { base: "learn", past: "learnt (learned)", pp: "learnt (learned)" },
+            { base: "leave", past: "left", pp: "left" },
+            { base: "lend", past: "lent", pp: "lent" },
+            { base: "let", past: "let", pp: "let" },
+            { base: "lie", past: "lay", pp: "lain" },
+            { base: "light", past: "lit (lighted)", pp: "lit (lighted)" },
+            { base: "lose", past: "lost", pp: "lost" },
+            { base: "make", past: "made", pp: "made" },
+            { base: "mean", past: "meant", pp: "meant" },
+            { base: "meet", past: "met", pp: "met" },
+            { base: "pay", past: "paid", pp: "paid" },
+            { base: "put", past: "put", pp: "put" },
+            { base: "quit", past: "quit (quitted)", pp: "quit (quitted)" },
+            { base: "read", past: "read", pp: "read" },
+            { base: "rid", past: "rid (ridded)", pp: "rid (ridded)" },
+            { base: "ride", past: "rode", pp: "ridden" },
+            { base: "ring", past: "rang", pp: "rung" },
+            { base: "rise", past: "rose", pp: "risen" },
+            { base: "run", past: "ran", pp: "run" },
+            { base: "say", past: "said", pp: "said" },
+            { base: "see", past: "saw", pp: "seen" },
+            { base: "seek", past: "sought", pp: "sought" },
+            { base: "sell", past: "sold", pp: "sold" },
+            { base: "send", past: "sent", pp: "sent" },
+            { base: "set", past: "set", pp: "set" },
+            { base: "shake", past: "shook", pp: "shaken" },
+            { base: "shoot", past: "shot", pp: "shot" },
+            { base: "show", past: "showed", pp: "shown (showed)" },
+            { base: "shrink", past: "shrank", pp: "shrunk" },
+            { base: "shut", past: "shut", pp: "shut" },
+            { base: "sing", past: "sang", pp: "sung" },
+            { base: "sink", past: "sank", pp: "sunk" },
+            { base: "sit", past: "sat", pp: "sat" },
+            { base: "sleep", past: "slept", pp: "slept" },
+            { base: "slide", past: "slid", pp: "slid" },
+            { base: "smell", past: "smelt (smelled)", pp: "smelt (smelled)" },
+            { base: "speak", past: "spoke", pp: "spoken" },
+            { base: "spell", past: "spelt (spelled)", pp: "spelt (spelled)" },
+            { base: "spend", past: "spent", pp: "spent" },
+            { base: "spill", past: "spilt (spilled)", pp: "spilt (spilled)" },
+            { base: "spin", past: "spun", pp: "spun" },
+            { base: "split", past: "split", pp: "split" },
+            { base: "spoil", past: "spoilt (spoiled)", pp: "spoilt (spoiled)" },
+            { base: "spread", past: "spread", pp: "spread" },
+            { base: "stand", past: "stood", pp: "stood" },
+            { base: "steal", past: "stole", pp: "stolen" },
+            { base: "stick", past: "stuck", pp: "stuck" },
+            { base: "sting", past: "stung", pp: "stung" },
+            { base: "swear", past: "swore", pp: "sworn" },
+            { base: "sweat", past: "sweat (sweated)", pp: "sweat (sweated)" },
+            { base: "swim", past: "swam", pp: "swum" },
+            { base: "swing", past: "swung", pp: "swung" },
+            { base: "take", past: "took", pp: "taken" },
+            { base: "teach", past: "taught", pp: "taught" },
+            { base: "tear", past: "tore", pp: "torn" },
+            { base: "tell", past: "told", pp: "told" },
+            { base: "think", past: "thought", pp: "thought" },
+            { base: "throw", past: "threw", pp: "thrown" },
+            { base: "wake", past: "woke (waked)", pp: "woken (waked)" },
+            { base: "wear", past: "wore", pp: "worn" },
+            { base: "win", past: "won", pp: "won" },
+            { base: "write", past: "wrote", pp: "written" }
+        ];
+
+        // System Variables
+        let mainQueue = [];
+        let pendingReview = [];
+        let reviewQueue = [];
+        let isReviewMode = false;
+
+        let currentQuestion = null;
+        let hiddenIndex = 0; // 0=base, 1=past, 2=pp
+        let score = { correct: 0, wrong: 0 };
+        let state = 'answering'; // 'answering' or 'feedback'
+        let totalQuestionsCount = 0;
+        let progressIndex = 0;
+
+        // Utility: Shuffle Array (Fisher-Yates)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
             }
-        });
-
-        quizContainer.innerHTML = html;
-        
-        // 입력창에 자동 포커스
-        setTimeout(() => document.getElementById('user-input').focus(), 100);
-    }
-
-    function checkAnswer() {
-        if (state === 'feedback') {
-            generateQuestion();
-            return;
+            return array;
         }
 
-        const inputEl = document.getElementById('user-input');
-        const userText = inputEl.value.trim().toLowerCase();
-        
-        // 정답 데이터 가져오기 (예: "awoke (awaked)")
-        let correctTextRaw = '';
-        if (hiddenIndex === 0) correctTextRaw = currentQuestion.base;
-        else if (hiddenIndex === 1) correctTextRaw = currentQuestion.past;
-        else correctTextRaw = currentQuestion.pp;
+        // Initialize full game
+        function startQuiz() {
+            mainQueue = shuffleArray([...verbs]);
+            totalQuestionsCount = mainQueue.length;
+            pendingReview = [];
+            reviewQueue = [];
+            isReviewMode = false;
+            progressIndex = 0;
+            score = { correct: 0, wrong: 0 };
 
-        // 정답 검증 로직 (스마트 체크)
-        // 1. 콤마나 괄호, 슬래시 등으로 구분된 여러 답안을 모두 허용
-        // "awoke (awaked)" -> ["awoke", "awaked"]
-        // "was, were" -> ["was", "were"]
-        const possibleAnswers = correctTextRaw
-            .toLowerCase()
-            .replace(/[()]/g, ',') // 괄호를 콤마로 변환
-            .split(',')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-
-        const isCorrect = possibleAnswers.includes(userText);
-
-        if (isCorrect) {
-            // 정답 처리
-            score.correct++;
-            correctEl.innerText = score.correct;
-            msgArea.innerText = "Excellent! Correct!";
-            msgArea.className = "message correct-msg";
+            document.getElementById('game-container').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('flex');
             
-            // 입력창을 정답 색상으로 변경
-            inputEl.parentElement.style.backgroundColor = "#e6fffa";
-            inputEl.parentElement.style.borderColor = "#00b894";
-            inputEl.style.color = "#00b894";
+            updateScoreUI();
+            updateTrackerUI();
+            loadNextLogic();
+        }
+
+        // Update Score & Progress UI
+        function updateScoreUI() {
+            document.getElementById('correct-count').innerText = score.correct;
+            document.getElementById('wrong-count').innerText = score.wrong;
+            document.getElementById('progress-text').innerText = `${progressIndex} / ${totalQuestionsCount}`;
+            document.getElementById('progress-fill').style.width = `${(progressIndex / totalQuestionsCount) * 100}%`;
+        }
+
+        // Update 5-Dot Tracker UI
+        function updateTrackerUI() {
+            for(let i=1; i<=5; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i <= pendingReview.length) {
+                    dot.classList.add('bg-red-500', 'shadow-[0_0_8px_rgba(239,68,68,0.6)]');
+                    dot.classList.remove('bg-slate-200');
+                } else {
+                    dot.classList.remove('bg-red-500', 'shadow-[0_0_8px_rgba(239,68,68,0.6)]');
+                    dot.classList.add('bg-slate-200');
+                }
+            }
+        }
+
+        // Modal Control
+        function showModal(title, desc) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('review-modal').style.display = 'flex';
+        }
+
+        function closeModalAndLoad() {
+            document.getElementById('review-modal').style.display = 'none';
+            popAndLoadWord();
+        }
+
+        // Core Game Flow Logic
+        function loadNextLogic() {
+            // 1. Check if 5 mistakes accumulated (Enter Review Mode)
+            if (!isReviewMode && pendingReview.length >= 5) {
+                isReviewMode = true;
+                reviewQueue = shuffleArray([...pendingReview]);
+                pendingReview = []; // clear to collect new mistakes if failed again
+                updateTrackerUI();
+                showModal("Review Time!", "You missed 5 words. Let's practice them again before moving on!");
+                return;
+            }
+
+            // 2. Check if finished current review queue
+            if (isReviewMode && reviewQueue.length === 0) {
+                isReviewMode = false;
+                showModal("Review Complete!", "Great job! Let's get back to new words.");
+                return;
+            }
+
+            // 3. Check if main queue is exhausted
+            if (!isReviewMode && progressIndex >= mainQueue.length) {
+                if (pendingReview.length > 0) {
+                    // Final sweep of any remaining mistakes
+                    isReviewMode = true;
+                    reviewQueue = shuffleArray([...pendingReview]);
+                    pendingReview = [];
+                    updateTrackerUI();
+                    showModal("Final Review!", "Almost done! Clear these last few words.");
+                    return;
+                } else {
+                    endGame();
+                    return;
+                }
+            }
+
+            popAndLoadWord();
+        }
+
+        // Render the next question
+        function popAndLoadWord() {
+            state = 'answering';
+            const msgArea = document.getElementById('message-area');
+            const actionBtn = document.getElementById('action-btn');
             
-            // 버튼 변경
-            actionBtn.innerText = "Next Question ➡️";
-            actionBtn.style.backgroundColor = "#00b894";
+            msgArea.innerHTML = '';
+            actionBtn.innerText = 'Check Answer';
+            actionBtn.className = "px-10 py-4 bg-blue-600 text-white font-bold text-xl rounded-full shadow-lg hover:bg-blue-700 transition transform hover:-translate-y-1 w-full sm:w-auto";
+
+            const container = document.getElementById('game-container');
+            const banner = document.getElementById('review-banner');
+
+            if (isReviewMode) {
+                currentQuestion = reviewQueue.shift();
+                banner.style.display = 'block';
+                container.classList.replace('border-blue-400', 'border-orange-400');
+                container.classList.add('bg-orange-50');
+            } else {
+                currentQuestion = mainQueue[progressIndex];
+                progressIndex++;
+                banner.style.display = 'none';
+                container.classList.replace('border-orange-400', 'border-blue-400');
+                container.classList.remove('bg-orange-50');
+            }
+
+            hiddenIndex = Math.floor(Math.random() * 3);
+            updateScoreUI();
+            renderBoxes();
+        }
+
+        // Render 3 Verb Boxes
+        function renderBoxes() {
+            const forms = [currentQuestion.base, currentQuestion.past, currentQuestion.pp];
+            const labels = ["Base Form", "Simple Past", "Past Participle"];
+
+            let html = '';
+            forms.forEach((text, index) => {
+                if (index === hiddenIndex) {
+                    html += `
+                        <div class="flex flex-col items-center justify-center w-[30%] min-w-[120px] max-w-[200px] h-28 bg-white border-4 border-blue-500 rounded-2xl shadow-[0_0_15px_rgba(59,130,246,0.2)] transition-colors p-2" id="input-container">
+                            <span class="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">${labels[index]}</span>
+                            <input type="text" id="user-input" autocomplete="off" placeholder="?" onkeyup="handleEnter(event)" class="w-full text-center font-extrabold text-2xl text-blue-600 bg-transparent outline-none">
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="flex flex-col items-center justify-center w-[30%] min-w-[120px] max-w-[200px] h-28 bg-slate-100 rounded-2xl shadow-inner border border-slate-200 p-2">
+                            <span class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">${labels[index]}</span>
+                            <div class="font-extrabold text-xl sm:text-2xl text-slate-700 leading-tight break-words text-center w-full">${text}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('quiz-area').innerHTML = html;
+            setTimeout(() => document.getElementById('user-input').focus(), 100);
+        }
+
+        // Check Answer Logic
+        function checkAnswer() {
+            if (state === 'feedback') {
+                loadNextLogic();
+                return;
+            }
+
+            const inputEl = document.getElementById('user-input');
+            const containerEl = document.getElementById('input-container');
+            const msgArea = document.getElementById('message-area');
+            const actionBtn = document.getElementById('action-btn');
+
+            const userText = inputEl.value.trim().toLowerCase();
+            
+            let correctTextRaw = '';
+            if (hiddenIndex === 0) correctTextRaw = currentQuestion.base;
+            else if (hiddenIndex === 1) correctTextRaw = currentQuestion.past;
+            else correctTextRaw = currentQuestion.pp;
+
+            // Smart verification: handles "awoke (awaked)" formats
+            const possibleAnswers = correctTextRaw
+                .toLowerCase()
+                .replace(/[()]/g, ',')
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+
+            const isCorrect = possibleAnswers.includes(userText);
+
+            if (isCorrect) {
+                score.correct++;
+                msgArea.innerHTML = "<span class='text-green-600'>Excellent! Correct!</span>";
+                containerEl.classList.replace('border-blue-500', 'border-green-500');
+                containerEl.classList.add('bg-green-50');
+                inputEl.classList.replace('text-blue-600', 'text-green-600');
+                
+                actionBtn.innerText = "Next Question ➔";
+                actionBtn.className = "px-10 py-4 bg-green-600 text-white font-bold text-xl rounded-full shadow-lg hover:bg-green-700 transition transform hover:-translate-y-1 w-full sm:w-auto";
+            } else {
+                score.wrong++;
+                msgArea.innerHTML = `<span class='text-red-600'>Oops! The answer is <b>"${correctTextRaw}"</b></span>`;
+                containerEl.classList.replace('border-blue-500', 'border-red-500');
+                containerEl.classList.add('bg-red-50');
+                inputEl.classList.replace('text-blue-600', 'text-red-600');
+
+                if (isReviewMode) {
+                    // Push back to end of review queue
+                    reviewQueue.push(currentQuestion);
+                } else {
+                    // Add to pending review if not already there
+                    if (!pendingReview.includes(currentQuestion)) {
+                        pendingReview.push(currentQuestion);
+                        updateTrackerUI();
+                    }
+                }
+                
+                actionBtn.innerText = "Next Question ➔";
+                actionBtn.className = "px-10 py-4 bg-red-600 text-white font-bold text-xl rounded-full shadow-lg hover:bg-red-700 transition transform hover:-translate-y-1 w-full sm:w-auto";
+            }
+            
+            updateScoreUI();
             state = 'feedback';
-        } else {
-            // 오답 처리
-            score.wrong++;
-            wrongEl.innerText = score.wrong;
-            msgArea.innerHTML = `Oops! The answer is <b>"${correctTextRaw}"</b>`;
-            msgArea.className = "message wrong-msg";
-            
-            // 입력창을 오답 색상으로 변경
-            inputEl.parentElement.style.backgroundColor = "#ffe6e6";
-            inputEl.parentElement.style.borderColor = "#d63031";
-            
-            // 버튼 변경
-            actionBtn.innerText = "Next Question ➡️";
-            actionBtn.style.backgroundColor = "#d63031";
-            state = 'feedback';
         }
-    }
 
-    function handleEnter(e) {
-        if (e.key === 'Enter') {
-            checkAnswer();
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
         }
-    }
 
-    // 게임 시작
-    generateQuestion();
+        // Smart TTS (Reads only visible words in order)
+        function playAudio() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const forms = [currentQuestion.base, currentQuestion.past, currentQuestion.pp];
+                let textsToRead = [];
+                forms.forEach((text, index) => {
+                    if (index !== hiddenIndex) {
+                        const cleanWord = text.split('(')[0].replace(/,/g, '').trim();
+                        textsToRead.push(cleanWord);
+                    }
+                });
+                
+                const utterance = new SpeechSynthesisUtterance(textsToRead.join(', '));
+                utterance.lang = 'en-US';
+                utterance.rate = 0.85; 
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("TTS is not supported in this browser.");
+            }
+        }
 
-</script>
-  <!-- Watermark: Ms. Hana's ELL Class -->
-  <div class="fixed top-4 right-4 text-orange-400/60 font-bold text-xl sm:text-2xl tracking-widest pointer-events-none select-none z-[9999]">
-    Ms. Hana's ELL Class
-  </div>
+        // End Game Sequence
+        function endGame() {
+            document.getElementById('game-container').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('flex');
+        }
+
+        // Initialize App
+        startQuiz();
+    </script>
 </body>
 </html>
